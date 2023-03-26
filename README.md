@@ -17,4 +17,4 @@ TBD
 | --------- | -------- | ------------------------------------------------------- | -------------- |
 | 2023.3.12 | 初步讨论 | [3.12 discussion](https://github.com/OSH-2023/-GLMWY/blob/main/docs/discussion/3.12%20discussion.md) | 已与老师讨论 |
 | 2023.3.18 | 大致选题以及研讨 | [3.18 discussion](https://github.com/OSH-2023/-GLMWY/blob/main/docs/discussion/3.18%20discussion.md)  |   已与老师讨论        |
-
+| 2023.3.26 | 确定选题方向、调研、分工| [3.26 discussion](https://github.com/OSH-2023/My-Glow/blob/main/docs/discussion/3.26%20discussion.md)| |
