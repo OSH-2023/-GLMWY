@@ -15,6 +15,6 @@ TBD
 
 | 日期      | 事件     | 结果                                                    | 备注           |
 | --------- | -------- | ------------------------------------------------------- | -------------- |
-| 2023.3.12 | 初步讨论 | [3.12 discussion](https://github.com/OSH-2023/-GLMWY/blob/main/docs/discussion/3.12%20discussion.md) | 后续与老师讨论 |
-| 2023.3.18 | 大致选题以及研讨 | [3.18 discussion](https://github.com/OSH-2023/-GLMWY/blob/main/docs/discussion/3.18%20discussion.md)  |   等待与老师讨论        |
+| 2023.3.12 | 初步讨论 | [3.12 discussion](https://github.com/OSH-2023/-GLMWY/blob/main/docs/discussion/3.12%20discussion.md) | 已与老师讨论 |
+| 2023.3.18 | 大致选题以及研讨 | [3.18 discussion](https://github.com/OSH-2023/-GLMWY/blob/main/docs/discussion/3.18%20discussion.md)  |   已与老师讨论        |
 
