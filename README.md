@@ -1,4 +1,6 @@
 # My-Glow
+<img src="https://github.com/OSH-2023/My-Glow/blob/main/src/My-Glow.jpg" style="zoom:20%" />
+
 ### 项目简介 Discription
 
 TBD
