@@ -24,3 +24,4 @@ TBD
 | 2023.4.2  | 对确定的方向做讨论、调研| [4.2 discussion](https://github.com/OSH-2023/My-Glow/blob/main/docs/discussion/4.2%20discussion.md) |            |
 | 2023.4.6  | 调研报告分工、调研     |  [4.6 discussion](https://github.com/OSH-2023/My-Glow/blob/main/docs/discussion/4.6%20discussion.md)|             |
 | 2023.4.8  | 撰写调研报告          |  [4.8 discussion](https://github.com/OSH-2023/My-Glow/blob/main/docs/research.md)| 已提交至My-Glow/docs/|
+| 2023.4.16  | 会议讨论实现细节，以及可行性报告分工          |  [4.16 discussion](https://github.com/OSH-2023/My-Glow/blob/main/docs/discussion/4.16%20discussion.md)| |
