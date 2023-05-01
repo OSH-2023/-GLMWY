@@ -27,3 +27,4 @@
 | 2023.4.16  | 会议讨论实现细节，以及可行性报告分工          |  [4.16 discussion](https://github.com/OSH-2023/My-Glow/blob/main/docs/discussion/4.16%20discussion.md)| |
 | 2023.4.20  | 会议讨论实现细节，以及可行性报告分工          |  | |
 | 2023.4.22  | 撰写可行性报告          |  [可行性报告](https://github.com/OSH-2023/My-Glow/blob/main/docs/feasibility/%E5%8F%AF%E8%A1%8C%E6%80%A7%E6%8A%A5%E5%91%8A.md)|已提交至My-Glow/docs/feasibility |
+| 2023.5.1   | 会议讨论中期报告     |  [5.1 discussion](https://github.com/OSH-2023/My-Glow/blob/main/docs/discussion/5.1%20discussion.md) | |
