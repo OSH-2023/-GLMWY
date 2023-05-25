@@ -131,7 +131,7 @@ pip3 config list
 
 更新
 
-安装github仓库中ray**.whl文件
+安装github仓库中ray**.whl文件（就是zip，下载到虚拟机改后缀为whl即可）
 
 ```shell
 sudo pip3 install ray**.whl
