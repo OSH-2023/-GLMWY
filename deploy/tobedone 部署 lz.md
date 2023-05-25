@@ -126,7 +126,7 @@ pip3 config list
 可以使用 
 
 ```
- sudo pip install -U pip
+ sudo pip3 install -U pip
 ```
 
 更新
