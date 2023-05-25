@@ -292,7 +292,7 @@ GRANT ALL PRIVILEGES ON *.* TO 'root'@'localhost';
 
 然后在 target 文件夹下运行生成的可执行文件，这个就是新的 server.jar
 
-`java -jal xxxx`
+`java -jar xxxx`
 
 这里可能报警告，我删了一些内容，但不一定是对的
 
