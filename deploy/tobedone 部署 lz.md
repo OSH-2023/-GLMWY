@@ -168,8 +168,8 @@ pip install tinytag
 pip install pydub
 pip3 install nltk
 pip install spacy
-python -m nltk.downloader stopwords
-python -m nltk.downloader universal_tagset
+python3 -m nltk.downloader stopwords
+python3 -m nltk.downloader universal_tagset
 python3 -m spacy download en
 pip install git+https://github.com/boudinfl/pke.git
 ```
