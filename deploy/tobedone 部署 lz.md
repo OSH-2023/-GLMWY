@@ -32,13 +32,13 @@ mysql版本：5/8（正在测试中） 直接用8
 
   `sudo apt-get remove openjdk*`
 
-+ 找到压缩包`jdk-11.0.1_linux-x64_bin.tar.gz `
++ 找到压缩包`openjdk-11.0.1_linux-x64_bin.tar.gz `
 
 + 找到一个合适的路径，建议在 `/usr/local`，新建文件夹，在其中解压缩
 
   `sudo tar -xvf jdk-11.0.1_linux-x64_bin.tar.gz`
 
-+ 从根目录进入 etc/profile 文件
++ 从根目录打开 etc/profile 
 
   ```java
   export JAVA_HOME=/usr/local/上一步新建的文件夹/jdk-11.0.1
@@ -166,7 +166,7 @@ pip install ffmpeg
 pip install SpeechRecognition
 pip install tinytag
 pip install pydub
-pip install nltk
+pip3 install nltk
 pip install spacy
 python -m nltk.downloader stopwords
 python -m nltk.downloader universal_tagset
