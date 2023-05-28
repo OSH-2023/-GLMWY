@@ -268,7 +268,7 @@ GRANT ALL PRIVILEGES ON *.* TO 'root'@'localhost';
 
 保存退出
 
-最后在命令行输入 `mysql -u root -p <mysql.sql` 即可（要输密码）
+最后在命令行输入 `mysql -u root -p <mysql.sql` 即可（要输密码）（注意要在x-TOBEDONE/mysql目录下）
 
 ##### mysql 5
 
