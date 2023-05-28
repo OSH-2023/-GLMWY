@@ -295,6 +295,11 @@ GRANT ALL PRIVILEGES ON *.* TO 'root'@'localhost';
 `java -jar xxxx`
 
 这里可能报警告，我删了一些内容，但不一定是对的
+如果运行时一直报警告，需要编辑x-TOBEDONE/mysql8/src下**所有**代码（推荐使用vscode远程连接，可以直接全部对于一个文件夹下所有文件查找替换，这样做需要在vscode安装ssh插件，在虚拟机安装openssh-server等等，可以自行搜索），需要删除/注释掉所有的以下字段。
+```
+if(!rs.last())
+  return NULL;
+```
 
 然后在/storage文件夹下修改 setup.ini，它的倒数第二行的路径，是存储节点用来存放文件碎片的目录，需要已经创建好，你需要在自己本地创建一个文件，然后将其路径写在这里，比如`/home/username/Desktop`
 
@@ -314,7 +319,7 @@ web下有两个包，grandpro_2022和2023，可以都试一下，我用的2023
 
 这个文件夹下是所需要的全部 web 代码，首先做更改
 
-搜索
+搜索（所有代码全部替换，方法可以用前面编辑server同样的方法）
 
 ```
 101.33.236.114
