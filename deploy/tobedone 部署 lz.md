@@ -200,7 +200,7 @@ pip install git+https://github.com/boudinfl/pke.git
 
 maven 是 java 的项目管理工具。简单来说，当我们修改了 dontpanic 的源码后，就要用 maven 来编译生成一个可执行文件。
 
-具体安装过程可以参照[这个链接](https://www.shuzhiduo.com/A/pRdBwwE2zn/)，注：只需完成1、2步与换源即可
+具体安装过程可以参照[这个链接](https://www.shuzhiduo.com/A/pRdBwwE2zn/)，注：只需完成1、2步与换源即可（ck部分不要做）
 
 Maven 的使用比较复杂，但是目前我们用到的部分较少，只有以下这些：(这两条命令后面会用)
 
@@ -284,7 +284,7 @@ GRANT ALL PRIVILEGES ON *.* TO 'root'@'localhost';
 
 而需要做的修改是：打开 /src/server/ 文件夹下的 pom.xml，大概第十六行的位置，有一个版本号，将它改为你的 mysql 版本号，保存退出。我用的是8.0.33
 
-然后使用 maven 进行重新编译生成(`maven clean package `)
+然后使用 maven 进行重新编译生成(`mvn clean package `)
 
 `cd target`
 
