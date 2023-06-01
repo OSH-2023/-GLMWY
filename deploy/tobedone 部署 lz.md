@@ -146,6 +146,7 @@ sudo pip3 install ray**.whl
 ## 3. 部署
 
 ### neo4j & serverweb（第一台机子）
+首先修改x-TOBEDONE/neo4j/pytoneo下的第336行改为第一台机子ip
 
 + `pip3 install websockets`
 
