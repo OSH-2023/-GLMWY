@@ -361,3 +361,15 @@ sudo systemctl start tomcat
 
 
 下载的文件在 download 文件夹中
+
+### 另外的报错
+
+打开网页时遇到以下报错
+
+![114514](src/114514.jpg)
+
+解决方法：删掉或注释如图所示majorJsp.jsp的237-240行
+
+打开网页时加载完毕，但卡在转圈圈界面
+
+解决方法：删掉majorJsp.jsp中preloader的部分
