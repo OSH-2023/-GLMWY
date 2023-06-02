@@ -373,3 +373,72 @@ sudo systemctl start tomcat
 打开网页时加载完毕，但卡在转圈圈界面
 
 解决方法：删掉majorJsp.jsp中preloader的部分
+
+### 端口连接不上（后面遇到端口连接不上都用这个）
+
+上传或下载时网页终端报错如下：  
+
+![QQ图片20230602162145](src/QQ图片20230602162145.png)
+
+原因：端口未开放  
+
+解决方法：
+
+先测试网络连接，在第二台机器上运行命令"ping 第一台机器ip"（以及反过来）  
+
+若返回64 bytes from 192.168.209.134: icmp_seq=1 ttl=64 time=0.829 ms则说明可以连接  
+
+若这一步连接不上可能需要重新分配虚拟机的ip
+
+
+然后测试端口连接，如上图中连接不上的报错形如：can't …… at ws://某ip:某port/.  
+
+则在另一台机器上运行命令telnet 某ip 某port（telnet需要sudo安装）  
+
+若返回形如：Connected to 192.168.209.134.  Escape character is '^]'.  则说明成功，否则进行如下步骤：
+
+每一步都需要输入密码：  
+
+1、开启防火墙 systemctl start firewalld  
+
+2、开放指定端口firewall-cmd --zone=public --add-port=7474/tcp --permanent  
+将7474改为连接不上的端口  
+
+3、重启防火墙 firewall-cmd --reload  
+
+再次用telnet测试，返回成功即可
+
+### 打标的路径修改
+目的：网页端上传操作做的事情实际是将碎片文件和源文件分别传给storage和tag，而tag又被moutpointslash路径下的文件新建触发，因而需要将路径统一
+
+1.修改第二台机器上ray/tag下的tagging.py中的路径，如下：
+
+![修改路径tagging](src/修改路径tagging.png)  
+
+其中filepath的""中的内容改为setup.ini中修改之后的存放碎片文件的路径（图中是修改后的）  
+
+2.修改第二台机器上ray/tag下的tag_server.py中的路径，如下：
+
+![修改路径tag_server](src/修改路径tag_server.png)  
+
+其中moutpointslash和moutpointnoslash都同上修改（图中是修改后的）
+
+### 手动拖入打标文件
+
+即使修改完打标路径，前端上传文件后，查看第二台机子上运行tag_server.py的终端，会发现依然有错，  
+
+这时候需要手动将上传文件拖入存放碎片文件的路径并覆盖，然后终端有如下输出则说明打标完成：  
+
+(上半部分为上述提到的报错，下半从-------开始是打标成功的输)       
+
+![打标](src/打标.png)
+
+### Graph界面的查看
+
+由于firefox不支持跨域访问，故即使检测到neo4j数据库中有数据后，前端graph也不能正常显示，于是推荐用windows打开前端，只需在windows上用支持跨域访问的浏览器， 
+
+如chrome访问"第二台机器ip:8080/grandpro_2023"即可，所用操作同前，无需修改代码  
+
+若依然无法显示，查看终端发现若是端口连接不上，则可能是因为第二台机器未开放端口8080，同上进行端口开放的操作。  
+
+最终应该能在Graph界面看到正常显示（标签可能不太对）  
