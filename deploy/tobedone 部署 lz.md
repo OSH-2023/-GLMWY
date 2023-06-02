@@ -384,14 +384,13 @@ sudo systemctl start tomcat
 
 解决方法：
 
-先测试网络连接，在第二台机器上运行命令"ping 第一台机器ip"（以及反过来）  
+(i)先测试网络连接，在第二台机器上运行命令"ping 第一台机器ip"（以及反过来）  
 
 若返回64 bytes from 192.168.209.134: icmp_seq=1 ttl=64 time=0.829 ms则说明可以连接  
 
 若这一步连接不上可能需要重新分配虚拟机的ip
 
-
-然后测试端口连接，如上图中连接不上的报错形如：can't …… at ws://某ip:某port/.  
+(ii)然后测试端口连接，如上图中连接不上的报错形如：can't …… at ws://某ip:某port/.  
 
 则在另一台机器上运行命令telnet 某ip 某port（telnet需要sudo安装）  
 
