@@ -441,3 +441,23 @@ sudo systemctl start tomcat
 若依然无法显示，查看终端发现若是端口连接不上，则可能是因为第二台机器未开放端口8080，同上进行端口开放的操作。  
 
 最终应该能在Graph界面看到正常显示（标签可能不太对）   
+
+### 部署完成启动方法
+
+1.neo4j & serverweb（第一台机子）
+
+启动neo4j：source/neo4j-community-4.4.0/bin下运行./neo4j start
+
+启动neo4j文件下python3 serverWeb.py
+
+2.ray & tagging &mysql(第二台机子)
+
+启动client：server（MySQL8）文件夹下java -jar JavaPractice-1.0-jar-with-dependencies.jar（可能在storage/target下）
+
+启动server：storage文件夹下java -jar JavaPractice-1.0-SNAPSHOT-jar-with-dependencies.jar（可能在storage/target下）
+
+任意终端运行ray start --head --port=6379
+
+启动ray/tag下python3 tag_server.py
+
+浏览器访问localhost:8080/grandpro_2023
