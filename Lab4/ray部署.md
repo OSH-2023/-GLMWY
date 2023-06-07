@@ -10,6 +10,8 @@
 
 ### 安装Ray
 
+> 不推荐使用conda环境。conda环境可能与系统自带的python环境产生冲突。将系统的python3卸载后或许可行。
+
 Ray的安装基于pip。运行以下命令安装Ray：
 
 ```bash
@@ -75,7 +77,7 @@ RUN sudo sed -i 's/security.ubuntu.com/mirrors.ustc.edu.cn/g' /etc/apt/sources.l
 RUN sudo apt update
 RUN sudo apt install -y python3 && sudo apt install -y python3-pip
 
-RUN pip3 config ser global.index-url https://pypi.tuna.tsinghua.edu.cn/simple
+RUN pip3 config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple
 
 RUN pip3 install -U "ray[default]"
 ```
