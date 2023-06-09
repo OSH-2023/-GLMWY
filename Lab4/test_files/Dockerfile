@@ -13,4 +13,4 @@ RUN apt install -y python3 && apt install -y python3-pip
 
 RUN pip3 config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple
 
-RUN pip3 install -U "ray[default]"
+RUN pip3 install -U "ray[default]==2.3.1"
