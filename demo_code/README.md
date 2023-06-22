@@ -1,9 +1,7 @@
-# x-TOBEDONE
+# My-Glows
 
-## 小组成员 
+## 简介
 
-- 徐    奥 ([xuao](https://github.com/xuao1))
-- 谭骏飞 ([sober-clever](https://github.com/sober-clever))
-- 关浩祥 ([Jerry-Kwan](https://github.com/Jerry-Kwan)）
-- 赵子毅 ([Kimagure](https://github.com/Kimagure7))
-- 牛午甲 ([Niuwujia](https://github.com/Niuwujia))
+这里是我们复现TOBEDONE，修了很多bug后得到的代码，可以部署成功。
+
+需要与我们的最新版本的测试结果对比
