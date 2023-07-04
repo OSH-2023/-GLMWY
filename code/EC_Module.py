@@ -8,7 +8,7 @@ receive_data2 = ''
 k = 4
 m = 7
 
-def EC_module(command, filepath, id, loadpath):
+def EC_module(command, filepath, id):
     filename = str(id)+'a'
     # 解析
     # 处理
@@ -30,10 +30,10 @@ def EC_module(command, filepath, id, loadpath):
     global receive_data1
     global receive_data2
 
-    if command != 'C' :
+    if command != 'Commit' :
         command_buffer = command
 
-    if command == 'U' :
+    if command == 'Upload' :
         # encode
         encoded_data = encoding(filepath)
         thread_rec1 = threading.Thread(target=listen_storage1, args=(command,))
@@ -45,13 +45,13 @@ def EC_module(command, filepath, id, loadpath):
         thread_send2 = threading.Thread(target=send_to_storage2, args=(encoded_data,command,filename,))
         thread_send1.start()
         thread_send2.start()
-        if int(receive_data1) + int(receive_data2) > 3 :
+        if int(receive_data1) + int(receive_data2) >= k :
             return True
         else :
             return False
     elif command == 'D' or command == 'R':
         return True
-    elif command == 'C' :
+    elif command == 'Commit' :
         thread_rec1 = threading.Thread(target=listen_storage1, args=(command,))
         thread_rec2 = threading.Thread(target=listen_storage2, args=(command,))
         thread_rec1.start()
@@ -62,8 +62,8 @@ def EC_module(command, filepath, id, loadpath):
         thread_send1.start()
         thread_send2.start()
         time.sleep(1)
-        if receive_data1 == 'y' and receive_data2 == 'y':
-            if command_buffer == 'U':
+        if receive_data1 == 'y' and receive_data2 == 'y':#握手成功
+            if command_buffer == 'Upload':
                 #令command == G ，即处理缓存后的操作
                 command = 'G'
                 #双线程发送信息到两个不同的存储节点
@@ -170,8 +170,7 @@ def listen_storage1(command):
     s.listen(1)
     if command == 'U' or command == 'C':
         conn, addr = s.accept()
-        receive_data1 = conn.recv(1).decode()
-        time.sleep(1) #运行1s
+        receive_data1 = conn.recv(1024).decode()
         conn.close()
     elif command == 'D':
         conn, addr = s.accept()
