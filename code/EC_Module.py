@@ -8,7 +8,8 @@ receive_data2 = ''
 k = 4
 m = 7
 
-def EC_module(command, filepath, filename, loadpath):
+def EC_module(command, filepath, id, loadpath):
+    filename = str(id)+'a'
     # 解析
     # 处理
         # Upload(filepath)
