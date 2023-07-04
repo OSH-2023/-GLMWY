@@ -170,12 +170,12 @@ def listen_storage1(command):
     s.listen(1)
     if command == 'U' or command == 'C':
         conn, addr = s.accept()
-        receive_data1 = conn.recv(1)
+        receive_data1 = conn.recv(1).decode()
         time.sleep(1) #运行1s
         conn.close()
     elif command == 'D':
         conn, addr = s.accept()
-        receive_data1 = conn.recv(1024)
+        receive_data1 = conn.recv(1024).decode()
         time.sleep(1)
         conn.close()
 
@@ -187,11 +187,11 @@ def listen_storage2():
     s.listen(1)
     if command == 'U'or comand == 'C':
         conn, addr = s.accept()
-        receive_data2 = conn.recv(1)
+        receive_data2 = conn.recv(1).decode()
         time.sleep(1) #运行2s
         conn.close()
     elif command == 'D':
         conn, addr = s.accept()
-        receive_data2 = conn.recv(1024)
+        receive_data2 = conn.recv(1024).decode()
         time.sleep(1)
         conn.close()
