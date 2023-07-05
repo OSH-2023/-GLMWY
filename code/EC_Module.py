@@ -20,14 +20,14 @@ def erasure(message):
     command_buffer=""
     for i in range(storage_num):
         receive_data[i]="0"
-    ave_fragment_num=int((k+m)/storage_num)
+    ave_fragment_num=int((m)/storage_num)
     for i in range(storage_num-1):
         fragment_nums[i]=ave_fragment_num
-    fragment_nums[storage_num-1]=k+m-ave_fragment_num*(storage_num-1)
+    fragment_nums[storage_num-1]=m-ave_fragment_num*(storage_num-1)
     command=message.split(",")[0]
     filepath=message.split(",")[1]
     id=message.split(",")[2]
-    filename = str(id) + ''.join('a' for _ in range(len(id)-1))
+    filename = str(id) + ''.join('a' for _ in range(len(id)))
 
     # encode
     encoded_data = encoding(filepath)
@@ -66,7 +66,7 @@ def erasure(message):
                 flag=False
                 break
         if flag:  # 握手成功
-            for i in range(storage_num - 1):
+            for i in range(storage_num):
                 thread_send.append(threading.Thread(target=send_to_storage, args=("None", "Go", filename, i,)))
                 thread_send[i].start()
             for i in range(storage_num):
