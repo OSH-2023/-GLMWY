@@ -3,41 +3,50 @@ from send_file import send_file
 from threading import Thread
 import queue
 import socket
-from EC_module import erasure
+from EC_Module import erasure_control
 from Ray_Module import ray_control
 import os
 
 message_queue = queue.Queue()
 
-sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+sock_listen = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+sock_web = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
-web_ip = 127.0.0.1
+listen_ip = '0.0.0.0'
+listen_port = 10000
+
+web_ip = '192.168.8.132'
 web_port = 10000
 
 def listen():
-    sock.bind((web_ip, web_port))
-    sock.listen(1)
+    sock_listen.bind((listen_ip, listen_port))
+    sock_listen.listen(1)
     print('等待连接')
-    conn, addr = sock.accept()
-    print('连接已建立: 'addr)
-    buffer = conn.recv(4096)
-    message = buffer.split(',')
-    if message[0] == 'Upload':  # 上传：Upload,file_path/filename,content
-        content = massage[2]
-        with open(os.join.path('uploadfile',filename)) as file:
-            while content:
-                file.write(content)
-                content = conn.recv(4096)
-        message[1] = os.join.path('uploadfile',filename)
-        message = message[0:1]
-        message_queue.put(message)
-    
-    elif message[0] == 'Download':
-        message_queue.put(message)
+    while True:
+        conn, addr = sock_listen.accept()
+        print('连接已建立: ',addr)
 
-    elif message[0] == 'Remove':
-        message_queue.put(message)
-    return
+        buffer = conn.recv(4096)
+        message = buffer.split(',')
+
+        if message[0] == 'Upload':  # 上传：Upload,file_id,filename,content
+            content = message[3]
+            file_name = message[2]
+
+            with open(os.join.path('uploadfile',file_name)) as file:
+                while content:
+                    file.write(content)
+                    content = conn.recv(4096)
+
+            message[3] = os.join.path('uploadfile',file_name)
+            message = message[0:3]
+            message_queue.put(message)
+        
+        elif message[0] == 'Download':  # 下载：Upload,file_id,filename
+            message_queue.put(message)
+
+        elif message[0] == 'Remove':  # 删除：Upload,file_id,filename
+            message_queue.put(message)
 
 
 def handle():
@@ -46,26 +55,25 @@ def handle():
             pass
         else:
             message = message_queue.get()
+
             if message[0] == 'Upload':
-                message[1] == message[1].replace('/','_')
-                if fileupload(message[1]):
+                if fileupload(message[1], message[2], message[3]):
                     print('upload success')
+
             elif message[0] == 'Download':
-                message[1] == message[1].replace('/','_')
-                if filedownload(message[1]):
+                if filedownload(message[1],message[2]):
                     print('download success')
 
             elif message[0] == 'Remove':
-                message[1] == message[1].replace('/','_')
-                if remove(message[1]):
+                if remove(message[1],message[2]):
                     print('remove success')
 
             else:
                 raise Exception('未定义操作')
 
 
-def fileupload(file_path):
-    if erasure('Upload'+','+file_path) is False:
+def fileupload(file_id, filename, file_path):
+    if erasure_control('Upload'+','+file_path+file_id) is False:
         print('存储模块错误')
         return False
 
@@ -73,7 +81,7 @@ def fileupload(file_path):
         print('ray模块错误')
         return False
 
-    if erasure('Commit') is False:
+    if erasure_control('Commit') is False:
         print('存储模块错误')
         return False
 
@@ -82,35 +90,36 @@ def fileupload(file_path):
     return True
 
 
-def filedownload(file_name):
-    if erasure('Download'+','+file_path) is False:
+def filedownload(file_id, filename):
+    file_path = os.path.join('Download',filename)
+    if erasure_control('Download'+','+file_path+','+file_id) is False:
         print('下载错误')
         return False
-    file_path = os.path.join('Download',file_name))
+    
     
     # 连接目标主机
-    sock.connect((web_ip, web_port))
+    sock_web.connect((web_ip, web_port))
     # 打开要发送的文件
     with open(file_path, 'rb') as file:
         # 读取文件内容
         data = file.read()
         # 发送文件数据
-        sock.sendall(data)
+        sock_web.sendall(data.encode('utf-8'))
     print("文件发送完成")
-    sock.close()
+    sock_web.close()
     return True
 
 
-def remove(file_path):
-    if erasure('Remove'+file_path) is False:
+def remove(file_id, filename):
+    if erasure_control('Remove'+','+filename+','+file_id) is False:
         print('存储模块错误')
         return False
 
-    if ray_control('Remove'+file_path) is False:
+    if ray_control('Remove'+filename) is False:
         print('ray模块错误')
         return False
 
-    if erasure('Commit') is False:
+    if erasure_control('Commit') is False:
         print('存储模块错误')
         return False
 
