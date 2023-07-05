@@ -1,5 +1,3 @@
-from receive_file import receive_file
-from send_file import send_file
 from threading import Thread
 import queue
 import socket
@@ -16,7 +14,7 @@ listen_ip = '0.0.0.0'
 listen_port = 10000
 
 web_ip = '192.168.8.132'
-web_port = 10000
+web_port = 9999
 
 def listen():
     sock_listen.bind((listen_ip, listen_port))
@@ -27,18 +25,20 @@ def listen():
         print('连接已建立: ',addr)
 
         buffer = conn.recv(4096)
-        message = buffer.split(',')
+        message = buffer.decode('utf-8').split(',')
+        print('收到命令：')
+        print(message)
 
         if message[0] == 'Upload':  # 上传：Upload,file_id,filename,content
             content = message[3]
             file_name = message[2]
 
-            with open(os.join.path('uploadfile',file_name)) as file:
+            with open(os.path.join('uploadfile',file_name)) as file:
                 while content:
                     file.write(content)
                     content = conn.recv(4096)
 
-            message[3] = os.join.path('uploadfile',file_name)
+            message[3] = os.path.join('uploadfile',file_name)
             message = message[0:3]
             message_queue.put(message)
         
@@ -55,6 +55,7 @@ def handle():
             pass
         else:
             message = message_queue.get()
+            print("取出队首:"+str(message))
 
             if message[0] == 'Upload':
                 if fileupload(message[1], message[2], message[3]):
@@ -99,12 +100,13 @@ def filedownload(file_id, filename):
     
     # 连接目标主机
     sock_web.connect((web_ip, web_port))
+    print('web连接已建立, 准备发送文件')
     # 打开要发送的文件
     with open(file_path, 'rb') as file:
         # 读取文件内容
         data = file.read()
         # 发送文件数据
-        sock_web.sendall(data.encode('utf-8'))
+        sock_web.sendall(data)
     print("文件发送完成")
     sock_web.close()
     return True
