@@ -3,7 +3,6 @@ import threading
 import socket
 import random
 from zfec.easyfec import Encoder, Decoder
-from Ray_Module import ray_control
 
 storage_num=1
 k = 4
@@ -61,6 +60,8 @@ def erasure(message):
     for i in range(storage_num):
         thread_rec[i].join(1)
     thread_rev = []
+    if command != "Commit":
+        command_buffer = command
     if command == "Upload":
         print("     ----Check----receive_data:"+str(receive_data))
         total=0
@@ -95,13 +96,27 @@ def erasure(message):
                 break
         if flag:
             print("EC模块和storage握手成功")
-            if ray_control('Commit' + ',None' + ',' + id) is False:
-                print('ray commit error')
             for i in range(storage_num):
                 thread_send.append(threading.Thread(target=send_to_storage, args=("", "Go", filename, i,)))
                 thread_send[i].start()
             for i in range(storage_num):
                 thread_send[i].join(1)
+#-------------------删除文件的长度信息--------------------#
+            if command_buffer == 'Delete' :
+                with open("total_len.tmp", "r") as f:
+                    lines = f.readlines()
+                with open("total_len.tmp", "w") as f:
+                    try:
+                        for line in lines:
+                            line_id, value = line.strip().split(':  ')
+                            if int(line_id) != id:
+                                f.write(line)
+                    except Exception as e:
+                        print("删除文件长度信息失败:", str(e))
+                    finally:
+                        print("删除文件长度信息成功")
+#-------------------------------------------------------#
+            return True
     else:
         print("Error:Undefined Command")
         return False
@@ -140,25 +155,30 @@ def listen_storage(storage_idx):
     conn.close()
     sock.close()
 
-def encoding(filepath):
+def encoding(filepath, id):
     # m-k correction blocks for every k blocks
     enc = Encoder(k, m)
     with open(filepath, 'rb') as f:
         data = f.read()
     # encode
     encoded_data = list(enc.encode(data))
+    #得到文件的长度信息
     with open("total_len.tmp","w") as t:
-        t.write(str(len(data)))
-    with open("encoding1.tmp","w") as s:
-        s.write(str(encoded_data))
+        t.write(str(id)+':  '+str(len(data))+'\n')
+    # with open("encoding1.tmp","w") as s:
+    #     s.write(str(encoded_data))
     # print(f"总的数据块数:{len(encoded_data)}")
     return encoded_data
 
-def decoding(data):
+def decoding(data, id):
     # with open("encoding2.tmp","w") as t:
     #     t.write(str(data))
-    with open("total_len.tmp","r") as f:
-        total_len=int(f.read())
+    #获取文件的长度信息
+    with open("total_len.tmp", "r") as f:
+        for line in f:
+            line_id, value = line.strip().split(':  ')
+            if int(line_id) == id:
+                total_len = int(value)
     print("totoal_len:"+str(total_len))
     dec = Decoder(k, m)
     # calculate padding length
@@ -173,4 +193,3 @@ def decoding(data):
     # print(decoded_data)
     with open(f"downloadfile/tttt", "wb") as f:
         f.write(decoded_data)
-
