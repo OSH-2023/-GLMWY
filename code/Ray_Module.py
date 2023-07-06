@@ -2,11 +2,13 @@ import tagging
 import socket
 import os
 import threading
+import time
 
-neo_ip="192.168.209.135"
+neo_ip="192.168.209.136"
 neo_port=4000
 listen_ip="0.0.0.0"
 listen_port=4001
+result_holder = [False]
 
 def ray_control(message):
     # 解析
@@ -23,31 +25,35 @@ def ray_control(message):
         print("Error:Undefined command")
 
 def Upload(filename,filepath):
+    # event=threading.Event()
     if_success=False
-    result_holder=[False]
-    event = threading.Event()
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     keywords = tagging.tagging(filepath)
-    send_data=filename+","+keywords
+    split_char = "%$$%@#!#(*%^&%"
+    send_data=filename+split_char+keywords
     try:
         # 连接目标主机
-        print("尝试连接")
+        print("尝试连接neo4j_handle")
         sock.connect((neo_ip, neo_port))
-        # 打开要发送的文件
+        # 发送给neo4j_handle
         sock.sendall(send_data.encode("utf-8"))
-        print("发送标签成功")
-        # 创建线程并启动
-        thread = threading.Thread(target=listening, args=(listen_ip,listen_port,result_holder,event))
-        thread.start()
-        event.wait(2)
-        if_success=result_holder[0]
-    except Exception as e:
-        print("发送标签时出现错误:", str(e))
+        print("发送到neo4j_handle成功")
     finally:
-        # 关闭套接字
         sock.close()
-        print("Check:if_success:"+str(if_success))
-        return if_success
+
+    listening(listen_ip, listen_port)
+    print("     ----Check----result_holder:"+str(result_holder))
+    if_success=result_holder[0]
+
+    print("     ----Check----if_success:" + str(if_success))
+    return if_success
+
+    # except Exception as e:
+    #     print("发送标签时出现错误:", str(e))
+    # finally:
+    #     # 关闭套接字
+    #     sock.close()
+
 
 def Remove(filename):
     pass
@@ -66,28 +72,25 @@ def Commit():
         # 关闭套接字
         sock.close()
 
-def listening(listen_ip,listen_port,result_holder,event):
+def listening(listen_ip,listen_port):
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    # 绑定IP和端口
     try:
-        # 绑定IP和端口
+
         sock.bind((listen_ip, listen_port))
         # 监听连接
         sock.listen(1)
-        print("等待连接...")
+        print("Ray模块等待连接...")
         # 接受连接
         conn, addr = sock.accept()
-        print("连接已建立:", addr)
+        print("Ray模块连接已建立:", addr)
         # 创建保存文件的空文件
         data = conn.recv(4096)
         data=data.decode('utf-8')
-        print("Check:data:"+str(data))
         if(data == "Success"):
             result_holder[0]=True
-    except Exception as e:
-        print("接收是否成功消息时出现错误:", str(e))
-    finally:
+            print("     ----Check----result_holder:" + str(result_holder))
         # 关闭连接
-        conn.close()
-        # 关闭套接字
+    finally:
         sock.close()
-        event.set()
+    # event.set()
