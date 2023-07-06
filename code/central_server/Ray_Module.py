@@ -1,4 +1,4 @@
-import tagging
+import text_tagging
 import socket
 import os
 
@@ -41,10 +41,10 @@ def Upload(filename,filepath,fileid):
         sock.close()
 
     listening(listen_ip, listen_port)
-    print("     ----Check----result_holder:"+str(result_holder))
+    # print("     ----Check----result_holder:"+str(result_holder))
     if_success=result_holder[0]
 
-    print("     ----Check----if_success:" + str(if_success))
+    # print("     ----Check----if_success:" + str(if_success))
     return if_success
 
 def Delete(filename,fileid):
@@ -64,10 +64,10 @@ def Delete(filename,fileid):
         sock.close()
 
     listening(listen_ip, listen_port)
-    print("     ----Check----result_holder:" + str(result_holder))
+    # print("     ----Check----result_holder:" + str(result_holder))
     if_success = result_holder[0]
 
-    print("     ----Check----if_success:" + str(if_success))
+    # print("     ----Check----if_success:" + str(if_success))
     return if_success
 
 def Commit():
@@ -102,7 +102,7 @@ def listening(listen_ip,listen_port):
         data=data.decode('utf-8')
         if(data == "Success"):
             result_holder[0]=True
-            print("     ----Check----result_holder:" + str(result_holder))
+            # print("     ----Check----result_holder:" + str(result_holder))
         # 关闭连接
     finally:
         sock.close()
