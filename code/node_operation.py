@@ -1,7 +1,8 @@
-# 创建节点
 from py2neo import Graph, Node
 
-def create_nodes(graph, nodes):
+# 创建节点
+def create_nodes(graph,nodes):
+
     node_ids=[]
     for node in nodes:
         graph.create(node)

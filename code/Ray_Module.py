@@ -1,8 +1,6 @@
 import tagging
 import socket
 import os
-import threading
-import time
 
 neo_ip="192.168.209.136"
 neo_port=4000
@@ -14,23 +12,22 @@ def ray_control(message):
     # 解析
     command=message.split(",")[0]
     filepath=message.split(",")[1]
+    fileid=message.split(",")[2]
     _ , filename=os.path.split(filepath)
     if command == "Upload":
-        return Upload(filename,filepath)
-    elif command == "Remove":
-        return Remove(filename)
+        return Upload(filename,filepath,fileid)
+    elif command == "Delete":
+        return Delete(filename,fileid)
     elif command == "Commit":
         return Commit()
     else:
         print("Error:Undefined command")
 
-def Upload(filename,filepath):
-    # event=threading.Event()
-    if_success=False
+def Upload(filename,filepath,fileid):
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     keywords = tagging.tagging(filepath)
     split_char = "%$$%@#!#(*%^&%"
-    send_data=filename+split_char+keywords
+    send_data="Upload"+split_char+filename+split_char+keywords+split_char+fileid
     try:
         # 连接目标主机
         print("尝试连接neo4j_handle")
@@ -38,6 +35,8 @@ def Upload(filename,filepath):
         # 发送给neo4j_handle
         sock.sendall(send_data.encode("utf-8"))
         print("发送到neo4j_handle成功")
+    except Exception as e:
+        print("发送标签时出现错误:", str(e))
     finally:
         sock.close()
 
@@ -48,15 +47,28 @@ def Upload(filename,filepath):
     print("     ----Check----if_success:" + str(if_success))
     return if_success
 
-    # except Exception as e:
-    #     print("发送标签时出现错误:", str(e))
-    # finally:
-    #     # 关闭套接字
-    #     sock.close()
+def Delete(filename,fileid):
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    split_char = "%$$%@#!#(*%^&%"
+    send_data = "Delete"+split_char+filename+split_char+"None"+split_char+fileid
+    try:
+        # 连接目标主机
+        print("尝试连接neo4j_handle")
+        sock.connect((neo_ip, neo_port))
+        # 发送给neo4j_handle
+        sock.sendall(send_data.encode("utf-8"))
+        print("发送到neo4j_handle成功")
+    except Exception as e:
+        print("发送标签时出现错误:", str(e))
+    finally:
+        sock.close()
 
+    listening(listen_ip, listen_port)
+    print("     ----Check----result_holder:" + str(result_holder))
+    if_success = result_holder[0]
 
-def Remove(filename):
-    pass
+    print("     ----Check----if_success:" + str(if_success))
+    return if_success
 
 def Commit():
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -71,6 +83,7 @@ def Commit():
     finally:
         # 关闭套接字
         sock.close()
+    return True
 
 def listening(listen_ip,listen_port):
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)

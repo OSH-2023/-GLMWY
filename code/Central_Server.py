@@ -24,45 +24,46 @@ def handle_web_message():
                 if FileDownload(filepath):
                     print('download success')
             elif command == 'Delete':
-                if FileRemove(filepath):
+                if FileDelete(filepath):
                     print('remove success')
             else:
                 raise Exception('message error')
 
 
-def FileUpload(file_path,file_id="0"):
+def FileUpload(file_path,fileid="0"):
     print("开始上传")
-    if erasure('Upload' + ',' + file_path+","+file_id) is False:
-        print('存储模块错误')
+    if erasure('Upload' + ',' + file_path+","+fileid) is False:
+        print('存储模块碎片文件存入缓冲区错误')
         return False
-    if ray_control('Upload' + ',' + file_path) is False:
-        print('ray模块错误')
+    if ray_control('Upload' + ',' + file_path+","+fileid) is False:
+        print('Ray模块标签存入缓冲区错误')
         return False
-    if erasure('Commit,None,'+file_id) is False:
-        print('存储模块错误')
+    if erasure('Commit,None,'+fileid) is False:
+        print('存储模块握手错误')
         return False
-    ray_control('Commit,None')
-    return True
-
-
-def FileDownload(file_path):
-    erasure('Download,D:\PycharmProjects,0')
-    return True
-
-def FileRemove(file_path):
-    if erasure('Delete,' + file_path+',0') is False:
-        print('存储模块错误')
-        return False
-
-    # if ray_control('Remove' + file_path) is False:
-    #     print('ray模块错误')
+    # 这三行放入EC_Module
+    # if ray_control('Commit'+',None'+','+fileid) is False:
+    #     print('ray commit error')
     #     return False
+    return True
 
-    if erasure('Commit,None,0') is False:
-        print('存储模块错误')
+
+def FileDownload(file_path="D:\PycharmProjects",fileid="0"):
+    erasure('Download,'+file_path+','+fileid)
+    return True
+
+def FileDelete(file_path,fileid="0"):
+    if erasure('Delete,' + file_path+','+fileid) is False:
+        print('存储模块删除命令存入缓冲区错误')
         return False
-
-    # if ray_control('Commit') is False:
+    if ray_control('Delete' + ','+file_path+','+fileid) is False:
+        print('Ray模块删除命令存入缓冲区错误')
+        return False
+    if erasure('Commit,None,'+fileid) is False:
+        print('存储模块握手错误')
+        return False
+    # 这三行放入EC_Module
+    # if ray_control('Commit'+',None'+','+fileid) is False:
     #     print('ray commit error')
     #     return False
 
@@ -71,7 +72,7 @@ def FileRemove(file_path):
 message_queue = queue.Queue()
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 # Example
-message_queue.put("Download,test.txt")
+message_queue.put("Delete,test.txt")
 if __name__ == "__main__":
     listen_thread = Thread(target=listenning)
     handle_thread = Thread(target=handle_web_message)

@@ -48,18 +48,18 @@ def main():
         elif command== 'Delete' :
             send_EC_Module("yes")
         elif message_list[0] == 'Download':
-            file_list=[]
+            file_list = []
             print("准备下载数据")
-            for folder in os.listdir('storage/'):
-                if filename == folder:
-                    for i in range(len(os.listdir('storage/'+filename+'/'))):
-                        with open('storage/'+filename+'/'+filename+str(i) + '.fragment', 'rb') as f:
-                            content=f.read()
-                            print("     ----Check----list:"+str(content))
-                            file_list.append(content)
-                    break
-            print("下载成功")
-            send_EC_Module(repr(file_list))
+            if os.path.exists('storage/' + filename):
+                for i in range(len(os.listdir('storage/' + filename + '/'))):
+                    with open('storage/' + filename + '/' + filename + str(i) + '.fragment', 'rb') as f:
+                        content = f.read()
+                        print("     ----Check----list:" + str(content))
+                        file_list.append(content)
+                    print("下载成功")
+                send_EC_Module(repr(file_list))
+            else:
+                send_EC_Module("0")
         elif command == 'Go':  # 最后commit成功的消息
             # 存储操作
             print("     ----Check----command_buffer:",command_buffer)
@@ -90,6 +90,7 @@ def main():
                 finally:
                     print("删除成功")
         elif command == 'Commit':
+            print("握手成功")
             send_EC_Module("yes")
     sock.close()
 

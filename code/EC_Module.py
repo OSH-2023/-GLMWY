@@ -3,6 +3,7 @@ import threading
 import socket
 import random
 from zfec.easyfec import Encoder, Decoder
+from Ray_Module import ray_control
 
 storage_num=1
 k = 4
@@ -79,6 +80,7 @@ def erasure(message):
         download_list=[]
         for i in range(storage_num):
             if receive_data[i] == "0":
+                print("下载失败")
                 return False
         for i in range(storage_num):
             download_list+=eval(receive_data[i])
@@ -93,6 +95,8 @@ def erasure(message):
                 break
         if flag:
             print("EC模块和storage握手成功")
+            if ray_control('Commit' + ',None' + ',' + id) is False:
+                print('ray commit error')
             for i in range(storage_num):
                 thread_send.append(threading.Thread(target=send_to_storage, args=("", "Go", filename, i,)))
                 thread_send[i].start()
@@ -151,8 +155,8 @@ def encoding(filepath):
     return encoded_data
 
 def decoding(data):
-    with open("encoding2.tmp","w") as t:
-        t.write(str(data))
+    # with open("encoding2.tmp","w") as t:
+    #     t.write(str(data))
     with open("total_len.tmp","r") as f:
         total_len=int(f.read())
     print("totoal_len:"+str(total_len))
