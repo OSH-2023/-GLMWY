@@ -79,7 +79,7 @@ function check_is_dir() {
 }
 
 const json_name = "/static/test.json"
-var id = 1;
+// var id = 1;
 var path = "";
 var full_path = "";
 function generate_list(data, parentElement) {
@@ -95,8 +95,8 @@ function generate_list(data, parentElement) {
         div.append(span);
         li.append(div);
 
-        div.attr('id', 'element' + id);
-        id++;
+        div.attr('id', 'element' + item.id);
+        // id++;
 
         if (item.isdir) {
             div.addClass('is-dir');

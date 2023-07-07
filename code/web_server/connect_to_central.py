@@ -77,19 +77,22 @@ def download_to_central(fileid, filename, file_path):
 
         conn, addr = sock_listen.accept()
         print('已连接到central server')
-        content = conn.recv(4096)
-        if content.decode('utf-8') == 'download error':
+
+        content = b''
+
+        while True:
+            buffer = conn.recv(4096)
+            content = b'' + content + buffer
+            if len(buffer) < 4096:
+                break
+
+        if content == b'download error':
             print('下载失败')
             return False
         print('已接收到central server的回复')
 
         with open(file_path, 'wb') as f:
-            while True:
-                print(len(content))
-                f.write(content)
-                content = conn.recv(4096)
-                if len(content) < 4096:
-                    break
+            f.write(content)
 
         print('下载成功')
 

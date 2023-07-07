@@ -8,7 +8,7 @@ app = Flask(__name__)
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0  # 禁用缓存
 UPLOAD_FOLDER = 'upload'
 STATIC_FOLDER = 'static'
-DOWNLOAD_FOLDER = 'download_file'
+DOWNLOAD_FOLDER = '/root/Projects/webserver/download_file'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['STATIC_FOLDER'] = STATIC_FOLDER
 app.config['DOWNLOAD_FOLDER'] = DOWNLOAD_FOLDER
@@ -68,7 +68,7 @@ def download_file():
 
         path = request.form.get('path', '')
         filename = os.path.basename(path)
-        target_path = os.path.join('./', app.config['DOWNLOAD_FOLDER'],
+        target_path = os.path.join(app.config['DOWNLOAD_FOLDER'],
                                    filename)
         element_id = request.form.get('id', '')
         print('element:', element_id)
