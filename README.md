@@ -8,11 +8,11 @@
 
 ### 成员 Members
 
-* [余淼 (组长)](https://github.com/Liuz233)
-* 王香雯
-* 毛骏源
-* 刘卓
-*  顾荣健
+* [余淼 (组长)](https://github.com/Ymm-cll)
+* [王香雯](https://github.com/xwx84768)
+* [毛骏源](https://github.com/junyuanM)
+* [刘卓](https://github.com/Liuz233)
+* [顾荣健](https://github.com/RJ-Gu)
 
 ### 项目进度 Project progress
 
