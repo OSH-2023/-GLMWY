@@ -1,17 +1,19 @@
-# import ray
+import ray
 import torch
 import os
-# from keybert import KeyBERT
+from keybert import KeyBERT
 from clarifai_grpc.grpc.api import service_pb2, resources_pb2
 from clarifai_grpc.grpc.api.status import status_code_pb2
 from clarifai_grpc.channel.clarifai_channel import ClarifaiChannel
 from clarifai_grpc.grpc.api import service_pb2_grpc
+import whisper
 
-
+os.environ["CUDA_VISIBLE_DEVICES"]="-1"
 @ray.remote
 def text_tagging(file_path, keywords_num=10):
     keywords_num=int(keywords_num)
     torch.cuda.is_available = lambda: False
+    kw_model = KeyBERT(model='distilbert-base-nli-mean-tokens')
     kw_model = KeyBERT(model='paraphrase-MiniLM-L6-v2')
     with open(file_path, "r") as f:
         text = f.read()
@@ -50,19 +52,36 @@ def img_tagging(file_path, keywords_num=10):
         keywords.append(str(concept.name))
     return repr(list(keywords))
 
+@ray.remote
+def mp3_tagging(file_path):
+    model = whisper.load_model("base")
+    audio = whisper.load_audio(file_path)
+    audio = whisper.pad_or_trim(audio)
+    mel = whisper.log_mel_spectrogram(audio)
+    # detect the spoken language
+    _, probs = model.detect_language(mel)
+    print(f"Detected language: {max(probs, key=probs.get)}")
+    # decode the audio
+    options = whisper.DecodingOptions(fp16=False)
+    result = whisper.decode(model, mel, options)
+    # print the recognized text
+    print(result.text)
 
 def tagging(file_path):
     ray.init()
     print("开始打标")
     tagging_function_table={
         "txt":text_tagging,
-        "jpg": img_tagging
+        "jpg":img_tagging,
+        "mp3":mp3_tagging,
+        "wav": mp3_tagging,
+        "flac":mp3_tagging
     }
     temp=file_path
     _, filename = os.path.split(temp)
     file_ext=filename.split(".")[-1]
-    # print("     ----Check:ext----:"+str(file_ext))
-    # print("     ----Check:path----:"+str(file_path))
+    print("     ----Check:ext----:"+str(file_ext))
+    print("     ----Check:path----:"+str(file_path))
     tagging_function=tagging_function_table[file_ext]
     ID=tagging_function.remote(file_path)
     keywords=ray.get(ID)
@@ -70,5 +89,6 @@ def tagging(file_path):
     return keywords
 
 if __name__ == "__main__":
-    # tagging("test.txt")
-    tagging("cat.jpg")
+    tagging("test.txt")
+    # tagging("cat.jpg")
+    # tagging("test3.wav")
