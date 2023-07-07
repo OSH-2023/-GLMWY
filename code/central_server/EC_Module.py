@@ -8,13 +8,31 @@ storage_num=1
 k = 4
 m = 7
 receive_data = ["0" for _ in range(storage_num)]
-storage_ip=["192.168.209.137"]
-storage_port=8888
+storage_ip=["172.31.226.234","172.29.48.102"]
+storage_port=[8888, 8889]
 listen_ip="0.0.0.0"
-listen_port=6000
-command_buffer = ''
+listen_port=[6000, 6001]
+
+split_char="%$$%@#!#(*%^&%"
+
+
+# 检查端口6000
+def check_port(port):
+    # 创建一个套接字
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    result = sock.connect_ex(('0.0.0.0', port))
+    if result == 0:
+        print("端口{}已被占用".format(port))
+        # 如果端口被占用，关闭套接字以释放端口
+        sock.close()
+    else:
+        print("端口{}未被占用".format(port))
+        sock.close()
+
+# 检查端口6000
 
 def erasure(message):
+    check_port(6000)
     fragment_nums=[]
     thread_rec = []
     thread_send = []
@@ -25,14 +43,14 @@ def erasure(message):
         fragment_nums.append(ave_fragment_num)
     fragment_nums.append(m-ave_fragment_num*(storage_num-1))
     # 解析message
-    command=message.split(",")[0]
-    filepath=message.split(",")[1]
-    id=message.split(",")[2]
+    command=message.split(split_char)[0]
+    filepath=message.split(split_char)[1]
+    id=message.split(split_char)[2]
     filename = str(id)
     # 纠删码计算
     encoded_data=[]
     if command == "Upload":
-        encoded_data = encoding(filepath)
+        encoded_data = encoding(filepath, id)
     a,b=0,0
     for i in range(storage_num):
         # 定义listen（监听storage）进程
@@ -46,20 +64,24 @@ def erasure(message):
             data=""
         # 定义发送给storage的进程
         thread_send.append(threading.Thread(target=send_to_storage, args=(data, command, filename,i,)))
-    # 开启监听进程
-    for i in range(storage_num):
-        thread_rec[i].start()
+    
+    
     # 等待监听进程开启监听
-    time.sleep(0.5)
+    # time.sleep(0.5)
     # 开启发送进程并等待发送结束，这时监听进程已经得到storage的回复
     for i in range(storage_num):
         thread_send[i].start()
     for i in range(storage_num):
-        thread_send[i].join(1)
+        thread_send[i].join()
     thread_send = []
+
+    # 开启监听进程
+    for i in range(storage_num):
+        thread_rec[i].start()
+
     # 等待监听进程
     for i in range(storage_num):
-        thread_rec[i].join(1)
+        thread_rec[i].join()
     thread_rev = []
     if command != "Commit":
         command_buffer = command
@@ -81,14 +103,17 @@ def erasure(message):
     elif command == "Download":
         download_list=[]
         for i in range(storage_num):
+            print('receive_data: ', receive_data)
             if receive_data[i] == "0":
                 print("下载失败")
                 return False
         for i in range(storage_num):
             download_list+=eval(receive_data[i])
-        decoding(download_list)
-        return True
+        
+        return decoding(download_list, id, filepath)
     elif command == 'Commit':
+        print('EC: filename: ', filename)
+        command_buffer = message.split(split_char)[3]
         flag=True
         print("     ----Check----receive_data:",str(receive_data))
         for i in range(len(receive_data)):
@@ -110,7 +135,7 @@ def erasure(message):
                     try:
                         for line in lines:
                             line_id, value = line.strip().split(':  ')
-                            if int(line_id) != id:
+                            if int(line_id) != int(id):
                                 f.write(line)
                     except Exception as e:
                         print("删除文件长度信息失败:", str(e))
@@ -118,6 +143,7 @@ def erasure(message):
                         print("删除文件长度信息成功")
 #-------------------------------------------------------#
             return True
+        return False
     else:
         print("Error:Undefined Command")
         return False
@@ -127,59 +153,77 @@ def send_to_storage(data, command, filename,storage_idx):
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     # 第一个存储节点
     print("准备发送到storage"+str(storage_idx))
-    sock.connect((storage_ip[storage_idx], storage_port))
-    data=repr(data)
-    # print("-----Check----data:"+str(data))
-    split_char="%$$%@#!#(*%^&%"
-    send_data=command+split_char+filename+split_char+data
-    sock.sendall(send_data.encode("utf-8"))
-    print("发送到storage成功")
-    sock.close()
+    try:
+        sock.connect((storage_ip[storage_idx], storage_port[storage_idx]))
+        print('EC: 建立与storage的连接')
+        data=repr(data)
+        # print("-----Check----data:"+str(data))
+        print('EC: filename: ', filename)
+        send_data=command+split_char+filename+split_char+data
+        print('EC: 准备好指令')
+        sock.sendall(send_data.encode("utf-8"))
+        print("发送到storage成功")
+    finally:
+        print("发送到storage成功")
+        sock.close()
 
 def listen_storage(storage_idx):
     # 监听服务器storage_idx的返回值
     receive=b""
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    sock.bind((listen_ip, listen_port))
-    sock.listen(1)
-    print("EC模块等待连接...")
-    conn, addr = sock.accept()
-    print("EC模块连接已建立:", addr)
-    while True:
-        chunk = conn.recv(4096)
-        if not chunk:
-            break
-        receive += chunk
-    receive = receive.decode("utf-8")
-    receive_data[storage_idx] = receive
-    print("EC模块接收到消息")
-    conn.close()
-    sock.close()
+    try:
+        sock.bind((listen_ip, listen_port[storage_idx]))
+        sock.listen(10)
+        print("EC模块等待连接...")
+        conn, addr = sock.accept()
+        print("EC模块连接已建立:", addr)
+        while True:
+            chunk = conn.recv(4096)
+            if not chunk:
+                break
+            receive += chunk
+        receive = receive.decode("utf-8")
+        receive_data[storage_idx] = receive
+        print("EC模块接收到消息")
+    finally:
+        # conn.close()
+        print("EC模块接收到消息")
+        sock.close()
 
 def encoding(filepath, id):
     # m-k correction blocks for every k blocks
     enc = Encoder(k, m)
     with open(filepath, 'rb') as f:
         data = f.read()
+#---------------------得到文件的长度信息-------------------#
+    with open("total_len.tmp","a") as t:
+        t.write(str(id)+':  '+str(len(data))+'\n')
+#--------------------------------------------------------#
     # encode
     encoded_data = list(enc.encode(data))
-    #得到文件的长度信息
-    with open("total_len.tmp","w") as t:
-        t.write(str(id)+':  '+str(len(data))+'\n')
     # with open("encoding1.tmp","w") as s:
     #     s.write(str(encoded_data))
     # print(f"总的数据块数:{len(encoded_data)}")
     return encoded_data
 
-def decoding(data, id):
+def decoding(data, id, filepath):
     # with open("encoding2.tmp","w") as t:
     #     t.write(str(data))
     #获取文件的长度信息
+    print("trying to get length")
+    flag = 0
     with open("total_len.tmp", "r") as f:
         for line in f:
             line_id, value = line.strip().split(':  ')
-            if int(line_id) == id:
+            print("line_id:",line_id)
+            print(id)
+            if int(line_id) == int(id):
                 total_len = int(value)
+                print("value to be needed:",value)
+                flag = 1
+                break
+    if flag == 0:
+        return False
     print("totoal_len:"+str(total_len))
     dec = Decoder(k, m)
     # calculate padding length
@@ -192,5 +236,6 @@ def decoding(data, id):
     blocks = [data[i] for i in blocknums]
     decoded_data = dec.decode(blocks, sharenums=blocknums, padlen=padlen)
     # print(decoded_data)
-    with open(f"downloadfile/tttt", "wb") as f:
+    with open(filepath, "wb") as f:
         f.write(decoded_data)
+    return True
