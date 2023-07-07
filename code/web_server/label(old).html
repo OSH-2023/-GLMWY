@@ -2,93 +2,26 @@
 <head>
     <title>Dataviz</title>
     <script src="./neovis.js"></script>
-    <meta charset="UTF-8">
     <!-- unpkg CDN non-minified -->
     <script src="https://unpkg.com/neo4j-driver"></script>
 </head>
-<style>
-    #box{
-        width: 100%;
-        height: 100%;
-        display: flex;
-    }
-    #left{
-        width: 300px;
-        height: 100%;
-        border-right: #fdd912 10px solid;
-    }
-    #left >div:last-child{
-        margin-top: 100px;
-    }
-    #label_select{
-        width: 200px;
-        height: 30px;
-        padding: 0 3px;
-        border: 1px solid #B2B2B2;
-        border-radius: 6px;
-        outline: none;
-    }
-    .nav-sel {
-        width: 90px;
-        height: 40px;
-        border: 1px solid #B2B2B2;
-        border-radius: 6px;
-        appearance:none;  
-        -moz-appearance:none;  
-        -webkit-appearance:none;  
-        background: url("/assets/images/down-arrow.png") no-repeat 65px center;
-        background-size:18%;
-    }
-    #text_input{
-        width: 200px;
-        height: 30px;
-        padding: 3px 5px;
-        outline: none;
-        border: 1px solid #B2B2B2;
-        border-radius: 6px;
-    }
-    #btn{
-        width: 60px;
-        height: 30px;
-        text-align: center;
-        border-radius: 5px;
-        border: 1px solid #B2B2B2;
-        background-color:white;
-    }
-    #right{
-        flex-grow: 1;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-    }
-</style>
 <body>
-<div id="box">
-    <div id="left">
-        <div>
-            <h3>选择想要显示的标签：</h3>
-            <select id="label_select"></select>
-        </div>
-        <div>
-            <h3>输入标签内容：</h3>
-            <input type="text" id="text_input">
-            <button id="btn" onclick="generate_query()">筛选</button>
-        </div>
-    </div>
-    <div id="right">
-        <div id="viz"></div>
-    </div>
-</div>
+<h3>选择想要显示的标签：</h3>
+<select id="label_select"></select>
+<h3>输入标签内容：</h3>
+<input type="text" id="text_input">
+<button onclick="generate_query()">筛选！</button>
+<div id="viz"></div>
 <script>
     var labels = [];
     var query = "";
-    const neo4j_address = 'bolt://44.204.33.62:7687';
+    const neo4j_address = 'bolt://54.147.68.158:7687';
     const neo4j_username = 'neo4j';
-    const neo4j_password = 'emergency-discipline-origins';
+    const neo4j_password = 'initiators-futures-monitor';
     var config;
     function require_labels() {
         // 创建一个Neo4j驱动程序
-        var driver = neo4j.driver(neo4j_address, neo4j.auth.basic(neo4j_username, neo4j_password));
+        const driver = neo4j.driver(neo4j_address, neo4j.auth.basic(neo4j_username, neo4j_password));
         console.log(driver);
         // 创建一个会话（session）
         const session = driver.session();
@@ -116,26 +49,54 @@
 
     function setupDropdown() {
         const dropdown = document.getElementById('label_select');
-        console.log(dropdown);
         dropdown.innerHTML = '';
         labels.forEach(option => {
             const optionElement = document.createElement('option');
             optionElement.value = option;
             optionElement.text = option;
-            console.log(optionElement.style);
             dropdown.appendChild(optionElement);
         });
     }
 
     window.onload = function () {
         require_labels();
+        draw_all();
     }
-
+    function draw_all(){
+        query = "MATCH (n)-[r]->(m) return n,r,m LIMIT 200";
+        config = {
+            containerId: "viz",
+            neo4j: {
+                serverUrl: neo4j_address,
+                serverUser: neo4j_username,
+                serverPassword: neo4j_password
+            },
+            labels: {
+                "Tag": {
+                    caption: "name",
+                    label: "name"
+                },
+                "File": {
+                    caption: "name",
+                    label: "name"
+                }
+            },
+            relationships: {
+                "PLAYED_IN": {
+                    caption: false,
+                    thickness: "score"
+                }
+            },
+            initialCypher: query
+        }
+        console.log("123");
+        draw();
+    }
     function generate_query() {
         const dropdown_value = document.getElementById("label_select").value;
         const text_input_value = document.getElementById("text_input").value;
         query = "MATCH p=(n:"+dropdown_value+")-[r]->(m) WHERE n.name=\'" + text_input_value + "\' RETURN n,r,m";
-        console.log(query);
+        //console.log(query);
         config ={
             containerId: "viz",
             neo4j: {
@@ -144,7 +105,7 @@
                 serverPassword: neo4j_password
             },
             labels: {
-                "Person": {
+                "Team": {
                     caption: "name",
                     label: "name"
                 },

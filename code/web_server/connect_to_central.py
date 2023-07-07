@@ -13,6 +13,7 @@ listen_port = 10000
 central_ip = '172.16.74.89'
 central_port = 9999
 
+split_char=b"%$$%@#!#(*%^&%"
 
 def upload_to_central(fileid, filename, file):
     sock_listen = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -22,8 +23,9 @@ def upload_to_central(fileid, filename, file):
         print('已连接到central server')
         content = file.read()
         print('content长度:', len(content))
-        message = b'' + b'Upload,' + str(fileid).encode(
-            'utf-8') + b',' + filename.encode('utf-8') + b',' + content
+        message = b'' + b'Upload' + split_char + str(fileid).encode(
+            'utf-8') + split_char + filename.encode('utf-8') + split_char + content
+        print(message)
         sock_central.sendall(message)
         print('已发送上传命令')
         # sock_central.close()
@@ -62,8 +64,9 @@ def download_to_central(fileid, filename, file_path):
     try:
         sock_central.connect((central_ip, central_port))
         print('已连接到central server')
-        message = b'' + b'Download,' + str(fileid).encode(
-            'utf-8') + b',' + filename.encode('utf-8')
+        message = b'' + b'Download' + split_char + str(fileid).encode(
+            'utf-8') + split_char + filename.encode('utf-8')
+        print(message)
         sock_central.sendall(message)
         print('已发送下载命令')
         # sock_central.close()
@@ -81,9 +84,12 @@ def download_to_central(fileid, filename, file_path):
         print('已接收到central server的回复')
 
         with open(file_path, 'wb') as f:
-            while content:
+            while True:
+                print(len(content))
                 f.write(content)
                 content = conn.recv(4096)
+                if len(content) < 4096:
+                    break
 
         print('下载成功')
 
@@ -109,8 +115,8 @@ def Delete_to_central(fileid, filename):
     try:
         sock_central.connect((central_ip, central_port))
         print('已连接到central server')
-        message = b'' + b'Delete,' + str(fileid).encode(
-            'utf-8') + b',' + filename.encode('utf-8')
+        message = b'' + b'Delete' + split_char + str(fileid).encode(
+            'utf-8') + split_char + filename.encode('utf-8')
         sock_central.sendall(message)
         print('已发送删除命令')
         # sock_central.close()

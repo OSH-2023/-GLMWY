@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>文件管理器</title>
+    <script src="https://unpkg.com/vue@2/dist/vue.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+    <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+    <style>
+        .selectable-block {
+            cursor: pointer;
+            padding: 5px;
+            border: 1px solid #ccc;
+            margin-bottom: 5px;
+        }
+
+        .selected {
+            background-color: #f5f5f5;
+            border-color: #999;
+        }
+
+        h1 {
+            font-size: 3em;
+            text-align: center;
+            padding: 50px 0 70px 0;
+            border-bottom: #fdd912 10px solid;
+        }
+
+        hr {
+            border: none;
+        }
+
+        .btn {
+            font-size: 32px !important;
+            border: none;
+            background-color: rgba(0, 0, 0, 0);
+            margin: 0 10px;
+            border-bottom: solid 3px #fdd912;
+            position: absolute;
+            bottom: 100px;
+            font-size: 16px;
+            font-weight: 500;
+        }
+
+        .select {
+            width: 130px !important;
+            height: 45px;
+            position: absolute;
+            bottom: 100px;
+            left: calc(50% - 300px);
+            transform: translate(-50%, 0px);
+        }
+
+        .select-file {
+            font-size: 32px;
+            opacity: 0;
+            z-index: 1;
+        }
+
+        .select-span {
+            display: inline-block;
+        }
+
+        .upload {
+            left: calc(50% - 215px);
+        }
+
+        .download {
+            left: calc(50% - 100px);
+        }
+
+        .setNew {
+            left: calc(50% + 15px);
+        }
+
+        .del {
+            left: calc(50% + 225px);
+        }
+
+        #selectList {
+            width: 200px;
+            height: 30px;
+            padding: 0 3px;
+            border: 1px solid #B2B2B2;
+            border-radius: 6px;
+            outline: none;
+        }
+
+        #app {
+            padding: 50px 100px 0 100px;
+            text-align: center;
+        }
+
+        .el-cascader {
+            width: 300px;
+        }
+
+        .el-cascader .el-input .el-input__inner {
+            border-color: #B2B2B2 !important;
+            border-width: 2px !important;
+        }
+
+        .el-cascader .el-input .el-input__inner:focus,
+        .el-cascader .el-input.is-focus .el-input__inner {
+            border-color: #B2B2B2 !important;
+            border-width: 2px !important;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>文件管理器</h1>
+    <div id="file_list"></div>
+    <div id="app">
+        <el-cascader :options="options"></el-cascader>
+    </div>
+    <script>
+        const json_name = "/static/test.json"
+
+        function convertToCascaderData(element, isChild) {
+            var cascaderData = [];
+            var liElements = element.querySelectorAll('li');
+            if (liElements.length > 0) {
+                for (var i = 0; i < liElements.length; i++) {
+                    if (liElements[i].parentNode.id !== 'file_list' && !isChild) continue;
+                    var option = {};
+                    const text = liElements[i].innerText.split('\n')[0];
+                    option.label = text;
+                    option.value = `${text}-${i}`;
+                    var subList = liElements[i].querySelector('ul');
+                    if (subList) {
+                        option.children = convertToCascaderData(subList, true);
+                    }
+                    cascaderData.push(option);
+                }
+            }
+            return cascaderData;
+        }
+        new Vue({
+            el: '#app',
+            data: {
+                options: [],
+            },
+            mounted: function () {
+                const _this = this;
+                $.getJSON(json_name, function (data) {
+                    generate_list(data, $('#file_list'));
+
+                    const el = document.getElementById('file_list');
+                    _this.options = convertToCascaderData(el);
+                    document.getElementById('file_list').style.display = 'none';
+                });
+            }
+        })
+
+        var id = 1;
+        var path = "";
+        var full_path = "";
+        function generate_list(data, parentElement) {
+
+            if (!Array.isArray(data)) {
+                data = [data];
+            }
+
+            $.each(data, function (index, item) {
+                var li = $('<li></li>');
+                var div = $('<div></div>').addClass('selectable-block');
+                var span = $('<span></span>').text(item.name);
+                div.append(span);
+                li.append(div);
+
+                div.attr('id', 'element' + id);
+                id++;
+
+                if (item.isdir) {
+                    div.addClass('is-dir');
+                    var children = $('<ul></ul>').addClass('sublist');
+                    generate_list(item.children, children);
+                    li.append(children);
+                } else {
+                    div.addClass('is-file');
+                }
+
+                parentElement.append(li);
+            });
+
+            parentElement.find('.selectable-block').click(function () {
+                $('.selectable-block').removeClass('selected');
+                $(this).addClass('selected');
+                //get_current_file_id();
+                path = get_file_path(get_current_file_id(), []);
+                document.getElementById("path_value").value = path;
+                full_path = get_full_file_path(get_current_file_id(), []);
+                document.getElementById("full_path_value").value = full_path;
+                document.getElementById("download_is_dir").value = check_is_dir();
+                document.getElementById("remove_is_dir").value = check_is_dir();
+                document.getElementById("remove_id").value = get_current_file_id();
+                document.getElementById("dir_path_value").value = path;
+                document.getElementById("download_path_value").value = full_path;
+                document.getElementById("download_id").value = get_current_file_id();
+                console.log(path);
+            });
+        }
+
+        // 在文档加载完成后调用 generate_list 函数
+        // $(document).ready(function() {
+        //     $.getJSON(json_name, function(data) {
+        //         generate_list(data, $('#file_list'));  // 传递要附加文件列表的父元素
+        //     });
+        // });
+        function get_current_file_id() {
+            var selectedElements = document.getElementsByClassName('selected');
+            var element = selectedElements[0];
+            //console.log(element.id);
+            return element.id;
+        }
+        function get_file_path_list(elementId, currentPath) {
+            var element = document.getElementById(elementId);
+            var current_name = element.childNodes[0].innerHTML;
+            if (element.classList.contains('is-dir')) {
+                currentPath.push(current_name);
+            }
+            if (element.parentNode.parentNode.nodeName === 'UL') {
+                var liElement = element.parentNode.parentNode.parentNode;
+                if (liElement.nodeName === 'LI') {
+                    get_file_path_list(liElement.childNodes[0].id, currentPath);
+                }
+            }
+            return currentPath;
+        }
+
+        function get_file_path() {
+            var path_list = get_file_path_list(get_current_file_id(), []);
+            //path_list = path_list.reverse();
+            var path = path_list.reverse().join("/");
+            if (path === "/") {
+
+            } else {
+                path = path.substring(1);
+            }
+            //path.append('/');
+            return path;
+        }
+        function get_full_file_path_list(elementId, currentPath) {
+            var element = document.getElementById(elementId);
+            var current_name = element.childNodes[0].innerHTML;
+            currentPath.push(current_name);
+            if (element.parentNode.parentNode.nodeName === 'UL') {
+                var liElement = element.parentNode.parentNode.parentNode;
+                if (liElement.nodeName === 'LI') {
+                    get_file_path_list(liElement.childNodes[0].id, currentPath);
+                }
+            }
+            return currentPath;
+        }
+
+        function get_full_file_path() {
+            var path_list = get_full_file_path_list(get_current_file_id(), []);
+            //path_list = path_list.reverse();
+            var path = path_list.reverse().join("/");
+            if (path === "/") {
+
+            } else {
+                path = path.substring(1);
+            }
+            //path.append('/');
+            return path;
+        }
+        function check_is_dir() {
+            var elementId = get_current_file_id();
+            var element = document.getElementById(elementId);
+            if (element.classList.contains('is-dir')) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+
+        var socket = io.connect('http://localhost:5000');
+        socket.on('message', function (msg) {
+            console.log(msg);
+            alert(msg);
+        });
+    </script>
+    <hr>
+    <form action="{{ url_for('upload_file', path=path) }}" method="post" enctype="multipart/form-data">
+        <input type="hidden" name="path" id="path_value" readonly>
+        <input type="file" name="file" class="select select-file">
+        <span class="btn select select-span">选择文件</span>
+        <input type="submit" value="上传" class="btn upload">
+    </form>
+    <form action="{{ url_for('download_file', path=path)}}" method="POST" enctype="multipart/form-data">
+        <input type="hidden" name="path" id="download_path_value" readonly>
+        <input type="hidden" name="is-dir" id="download_is_dir">
+        <input type="hidden" name="id" id="download_id">
+        <input type="submit" value="下载" class="btn download">
+    </form>
+    <form action="{{ url_for('new_dir', path=path) }}" method="post" enctype="multipart/form-data">
+        <input type="hidden" name="path" id="dir_path_value" readonly>
+        <input type="hidden" name="dir_name">
+        <input type="submit" value="新建文件夹" class="btn setNew">
+    </form>
+    <form action="{{ url_for('delete_file', path=path) }}" method="post" enctype="multipart/form-data">
+        <input type="hidden" name="path" id="full_path_value" readonly>
+        <input type="hidden" name="is-dir" id="remove_is_dir">
+        <input type="hidden" name="id" id="remove_id">
+        <input type="submit" value="删除" class="btn del">
+    </form>
+</body>
+
+</html>

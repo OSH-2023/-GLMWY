@@ -4,6 +4,18 @@ function get_current_file_id() {
     //console.log(element.id);
     return element.id;
 }
+
+function get_current_file_id() {
+    var selectedElements = document.getElementsByClassName('selected');
+    if (selectedElements.length > 0) {
+        var element = selectedElements[0];
+        return element.id;
+    }
+    return null; // 或者返回适当的默认值，表示未找到选中的元素
+}
+
+
+
 function get_file_path_list(elementId, currentPath) {
     var element = document.getElementById(elementId);
     var current_name = element.childNodes[0].innerHTML;
@@ -71,7 +83,7 @@ var id = 1;
 var path = "";
 var full_path = "";
 function generate_list(data, parentElement) {
-
+    console.log(data);
     if (!Array.isArray(data)) {
         data = [data];
     }

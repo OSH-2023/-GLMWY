@@ -15,7 +15,7 @@ app.config['DOWNLOAD_FOLDER'] = DOWNLOAD_FOLDER
 
 socketio = SocketIO(app)
 
-json_file = './static/test.json'
+json_file = '/root/Projects/webserver/static/test.json'
 
 
 @app.route('/')
@@ -71,7 +71,9 @@ def download_file():
         target_path = os.path.join('./', app.config['DOWNLOAD_FOLDER'],
                                    filename)
         element_id = request.form.get('id', '')
+        print('element:', element_id)
         id = int(element_id[7:])
+        print('id:',id)
         if connect_to_central.download_to_central(id, filename, target_path):
             print('download from central success')
             message_forward('download success')

@@ -5,62 +5,19 @@
     "children": [
         {
             "id": 2,
-            "name": "file1",
-            "isdir": false,
+            "name": "\u6587\u4ef6\u59391",
+            "isdir": true,
             "children": []
         },
         {
             "id": 3,
-            "name": "file2",
-            "isdir": false,
+            "name": "\u6587\u4ef6\u59392",
+            "isdir": true,
             "children": []
         },
         {
             "id": 4,
-            "name": "dir1",
-            "isdir": true,
-            "children": [
-                {
-                    "id": 5,
-                    "name": "file3",
-                    "isdir": false,
-                    "children": []
-                },
-                {
-                    "id": 6,
-                    "name": "file4",
-                    "isdir": false,
-                    "children": []
-                },
-                {
-                    "id": 7,
-                    "name": "dir2",
-                    "isdir": true,
-                    "children": []
-                },
-                {
-                    "id": 9,
-                    "name": "file6",
-                    "isdir": false,
-                    "children": []
-                },
-                {
-                    "id": 12,
-                    "name": "server.py",
-                    "isdir": false,
-                    "children": []
-                }
-            ]
-        },
-        {
-            "id": 10,
-            "name": "file7",
-            "isdir": false,
-            "children": []
-        },
-        {
-            "id": 11,
-            "name": "file8",
+            "name": "\u6587\u4ef6\u59393",
             "isdir": true,
             "children": []
         }

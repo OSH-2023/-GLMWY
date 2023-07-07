@@ -2,7 +2,7 @@ from nltk.tokenize import word_tokenize
 from nltk.corpus import stopwords
 from nltk.probability import FreqDist
 import nltk
-import ray
+# import ray
 
 # nltk.download('stopwords')
 # ray.init(address="auto", _redis_password='5241590000000000')
