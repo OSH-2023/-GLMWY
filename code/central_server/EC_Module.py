@@ -12,6 +12,7 @@ storage_ip=["192.168.209.137"]
 storage_port=8888
 listen_ip="0.0.0.0"
 listen_port=6000
+command_buffer = ''
 
 def erasure(message):
     fragment_nums=[]
