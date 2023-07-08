@@ -1,0 +1,7 @@
+The content provided is a C++ program that performs certain operations on an array using a segment tree data structure. 
+
+The program includes the necessary header files and defines some macros. It also defines some functions and variables to handle input and output and perform the required operations.
+
+The main function reads the input, builds the segment tree, and then performs a series of operations based on the given input. The operations include modifying a range of elements in the array and querying the sum of elements in a range. The program uses lazy propagation to efficiently update the segment tree and avoid unnecessary calculations.
+
+Finally, the program outputs the result of each query operation.

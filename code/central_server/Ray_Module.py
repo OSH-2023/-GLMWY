@@ -1,18 +1,30 @@
-import text_tagging
-import socket
 import os
+import sys
+import socket
+import tagging
+import tagging_without_ray
 
-neo_ip="192.168.209.136"
-neo_port=4000
-listen_ip="0.0.0.0"
-listen_port=4001
+sys.path.append(os.path.dirname(sys.path[0]))
+import config
+setting=config.args()
+settings=setting.set
+
+listen_ip=settings["listen_ip"]
+listen_port=settings["Ray_listen_neo"]
+neo_ip=settings["neo_ip"]
+neo_port=settings["Ray_send_neo"]
+
+use_ray=settings["use_ray"]
+split_char=settings["split_char"]
+keywords_num=settings["keywords_num"]
+
 result_holder = [False]
 
 def ray_control(message):
     # 解析
-    command=message.split(",")[0]
-    filepath=message.split(",")[1]
-    fileid=message.split(",")[2]
+    command=message.split(split_char)[0]
+    filepath=message.split(split_char)[1]
+    fileid=message.split(split_char)[2]
     _ , filename=os.path.split(filepath)
     if command == "Upload":
         return Upload(filename,filepath,fileid)
@@ -25,7 +37,10 @@ def ray_control(message):
 
 def Upload(filename,filepath,fileid):
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    keywords = tagging.tagging(filepath)
+    if use_ray:
+        keywords = tagging.tagging(filepath)
+    else:
+        keywords= tagging_without_ray.tagging(filepath,keywords_num)
     split_char = "%$$%@#!#(*%^&%"
     send_data="Upload"+split_char+filename+split_char+keywords+split_char+fileid
     try:
@@ -87,6 +102,7 @@ def Commit():
 
 def listening(listen_ip,listen_port):
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    # sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     # 绑定IP和端口
     try:
 

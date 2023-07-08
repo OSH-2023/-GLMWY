@@ -1,82 +1,170 @@
-<html>
+<!doctype html>
+<html lang="en">
+
 <head>
-    <title>Dataviz</title>
-    <script src="./neovis.js"></script>
-    <meta charset="UTF-8">
-    <!-- unpkg CDN non-minified -->
     <script src="https://unpkg.com/neo4j-driver"></script>
+    <script src="./neovis.js"></script>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <title>MyGlow Graph</title>
+    <meta name="description" content="MyGlow is a File System.">
+    <link rel="shortcut icon" href="../../../src/My-Glow.jpg" type="image/x-icon">
+    <!-- Bootstrap CSS -->
+
+
+    <!-- Theme CSS -->
+    <link rel="stylesheet" href="../static/assets/css/theme.min.css">
+    <style>
+        .main-wrapper {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background-color: rgba(255,255,255,0.5);
+        }
+        .header-btn {
+            width: 50%;
+            text-align: center;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+            font-size: 20px;
+        }
+
+        .header-btn a {
+            font-size: 20px;
+            font-weight: normal;
+            display: block;
+            padding: 10px;
+        }
+        .header-classic {
+            background-color: rgba(255, 255, 255, 0.5); /* 使用 rgba() 函数来设置透明度 */
+
+        }
+        .header-btn:hover {
+            background-color: #f2f2f2;
+        }
+        .background-image {
+            background-image: url("../static/assets/images/vz1gcIr.png");
+            background-size: cover; /* 背景图片尺寸调整 */
+            background-repeat: no-repeat; /* 防止背景图片重复 */
+            background-attachment: fixed;
+            /* 其他样式属性 */
+        }
+        .content-container {
+            padding-top: 72.57px;
+        }
+
+        .height-100-percent {
+            height: 100vh;
+        }
+        .form-row form {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            margin: 0;
+        }
+        .form-row form input[type="submit"] {
+            margin-left: 10px;
+        }
+
+        .h2.mb-4 {
+            color: white; /* 将标题的颜色设为白色 */
+        }
+        .left-container {
+            width: 33.33%;
+            height: calc(100vh - 72.57px);
+            float: left;
+        }
+
+        .right-container {
+            width: 66.67%;
+            height: calc(100vh - 72.57px);
+            float: right;
+        }
+        .height-without-label{
+            height: calc(100vh - 72.57px);
+        }
+        .glass-container {
+            background-color: rgba(255, 255, 255, 0);
+            backdrop-filter: blur(10px);
+        }
+    </style>
+
 </head>
-<style>
-    #box{
-        width: 100%;
-        height: 100%;
-        display: flex;
-    }
-    #left{
-        width: 300px;
-        height: 100%;
-        border-right: #fdd912 10px solid;
-    }
-    #left >div:last-child{
-        margin-top: 100px;
-    }
-    #label_select{
-        width: 200px;
-        height: 30px;
-        padding: 0 3px;
-        border: 1px solid #B2B2B2;
-        border-radius: 6px;
-        outline: none;
-    }
-    .nav-sel {
-        width: 90px;
-        height: 40px;
-        border: 1px solid #B2B2B2;
-        border-radius: 6px;
-        appearance:none;  
-        -moz-appearance:none;  
-        -webkit-appearance:none;  
-        background: url("/assets/images/down-arrow.png") no-repeat 65px center;
-        background-size:18%;
-    }
-    #text_input{
-        width: 200px;
-        height: 30px;
-        padding: 3px 5px;
-        outline: none;
-        border: 1px solid #B2B2B2;
-        border-radius: 6px;
-    }
-    #btn{
-        width: 60px;
-        height: 30px;
-        text-align: center;
-        border-radius: 5px;
-        border: 1px solid #B2B2B2;
-        background-color:white;
-    }
-    #right{
-        flex-grow: 1;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-    }
-</style>
+
 <body>
-<div id="box">
-    <div id="left">
-        <div>
-            <h3>选择想要显示的标签：</h3>
-            <select id="label_select"></select>
+<div class="main-wrapper">
+    <!-- header start -->
+    <div class="header-classic">
+        <!-- navigation start -->
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+                    <nav class="navbar navbar-expand-lg navbar-classic">
+                        <a class="navbar-brand" href="index.html"><h3>MyGlow</h3></a>
+                        <button class="navbar-toggler collapsed" type="button" data-toggle="collapse" data-target="#navbar-classic" aria-controls="navbar-classic" aria-expanded="false" aria-label="Toggle navigation">
+                            <span class="icon-bar top-bar mt-0"></span>
+                            <span class="icon-bar middle-bar"></span>
+                            <span class="icon-bar bottom-bar"></span>
+                        </button>
+                        <div class="collapse navbar-collapse" id="navbar-classic">
+                            <div class="header-btn mx-auto">
+                                <a id="file-link" href="./index.html">File</a>
+                            </div>
+                            <div class="header-btn mx-auto">
+                                <a id="graph-link" href="./label.html">Graph</a>
+                            </div>
+                        </div>
+                    </nav>
+                </div>
+            </div>
         </div>
+        <!-- navigation close -->
+    </div>
+    <script>
+        // Get the left and right header buttons
+        const fileBtn = document.getElementById('file-link');
+        const graphBtn = document.getElementById('graph-link');
+
+        // Add event listeners to the left and right half of the header
+        document.querySelector('.header-btn:nth-child(1)').addEventListener('mouseenter', function () {
+            fileBtn.style.fontWeight = 'bold';
+            fileBtn.style.fontSize = '20px';
+        });
+
+        document.querySelector('.header-btn:nth-child(2)').addEventListener('mouseenter', function () {
+            graphBtn.style.fontWeight = 'bold';
+            graphBtn.style.fontSize = '20px';
+        });
+
+        document.querySelector('.header-btn:nth-child(1)').addEventListener('mouseleave', function () {
+            fileBtn.style.fontWeight = 'normal';
+            fileBtn.style.fontSize = '20px';
+        });
+
+        document.querySelector('.header-btn:nth-child(2)').addEventListener('mouseleave', function () {
+            graphBtn.style.fontWeight = 'normal';
+            graphBtn.style.fontSize = '20px';
+        });
+    </script>
+</div>
+<div class="background-image height-100-percent content-container">
+    <div class="left-container card card-body">
         <div>
-            <h3>输入标签内容：</h3>
-            <input type="text" id="text_input">
-            <button id="btn" onclick="generate_query()">筛选</button>
+            <h1 class="h2 mb-4" >Find related files and tags!</h1>
+            <select class="select2 form-control custom-select" id="label_select">
+            </select>
+            <div class="form-group mt-3">
+                <input type="text" id="text_input" class="form-control " placeholder="name">
+            </div>
+            <div class="text-right mt-3">
+                <button id="btn" onclick="generate_query()" class="btn btn-primary">Search</button>
+            </div>
         </div>
     </div>
-    <div id="right">
-        <div id="viz"></div>
+    <div class="right-container">
+        <div id="viz" class="height-without-label glass-container"></div>
     </div>
 </div>
 <script>
@@ -129,8 +217,40 @@
 
     window.onload = function () {
         require_labels();
+        initial_draw();
     }
-
+    function initial_draw() {
+        //const dropdown_value = document.getElementById("label_select").value;
+        //const text_input_value = document.getElementById("text_input").value;
+        query = "MATCH p=(n)-[r]->(m) RETURN n,r,m LIMIT 100";
+        console.log(query);
+        config ={
+            containerId: "viz",
+            neo4j: {
+                serverUrl: neo4j_address,
+                serverUser: neo4j_username,
+                serverPassword: neo4j_password
+            },
+            labels: {
+                "File": {
+                    caption: "name",
+                    label: "name"
+                },
+                "Tag": {
+                    caption: "name",
+                    label: "name"
+                }
+            },
+            relationships: {
+                "IS_TAG": {
+                    caption: "value",
+                    thickness: "score"
+                }
+            },
+            initialCypher: query
+        }
+        draw();
+    }
     function generate_query() {
         const dropdown_value = document.getElementById("label_select").value;
         const text_input_value = document.getElementById("text_input").value;
@@ -144,18 +264,18 @@
                 serverPassword: neo4j_password
             },
             labels: {
-                "Person": {
+                "File": {
                     caption: "name",
                     label: "name"
                 },
-                "Match": {
-                    caption: "stage",
-                    label: "stage"
+                "Tag": {
+                    caption: "name",
+                    label: "name"
                 }
             },
             relationships: {
-                "PLAYED_IN": {
-                    caption: false,
+                "IS_TAG": {
+                    caption: "value",
                     thickness: "score"
                 }
             },

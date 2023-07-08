@@ -1,21 +1,24 @@
+import os
+import sys
 import socket
 
+sys.path.append(os.path.dirname(sys.path[0]))
+import config
+setting=config.args()
+settings=setting.set
 # 上传：Upload,file_id,filename,content
 # 下载：Download,file_id,filename
 # 删除：Delete,file_id,filename
 
-# sock_listen = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-# sock_central = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+listen_ip = settings["listen_ip"]
+listen_port = settings["web_listen_central"]
+central_ip = settings["central_ip"]
+central_port = settings["web_send_central"]
 
-listen_ip = '0.0.0.0'
-listen_port = 10000
-
-central_ip = '172.16.74.89'
-central_port = 9999
-
-split_char=b"%$$%@#!#(*%^&%"
+split_char=settings["split_char"].encode("utf-8")
 
 def upload_to_central(fileid, filename, file):
+    print("upload进程pid是" + str(os.getpid()))
     sock_listen = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     sock_central = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     try:
@@ -25,7 +28,7 @@ def upload_to_central(fileid, filename, file):
         print('content长度:', len(content))
         message = b'' + b'Upload' + split_char + str(fileid).encode(
             'utf-8') + split_char + filename.encode('utf-8') + split_char + content
-        print(message)
+        # print(message)
         sock_central.sendall(message)
         print('已发送上传命令')
         # sock_central.close()
@@ -59,6 +62,7 @@ def upload_to_central(fileid, filename, file):
 
 
 def download_to_central(fileid, filename, file_path):
+    print("download进程pid是" + str(os.getpid()))
     sock_listen = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     sock_central = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     try:
@@ -113,6 +117,7 @@ def download_to_central(fileid, filename, file_path):
 
 
 def Delete_to_central(fileid, filename):
+    print("delete进程pid是" + str(os.getpid()))
     sock_listen = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     sock_central = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     try:
