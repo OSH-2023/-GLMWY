@@ -291,10 +291,6 @@ centralserver,webserver,storage,ray,neo4j等节点是我们要监控的节点，
 
 ![image-20230709105814133](./src/image-20230709105814133.png)
 
-### 数据一致性
-
-(TBD)
-
 ### 监控
 
 如图是Grafana的监控界面，我认为对于分布式系统监控部件是必要的，但我们部署监控有另外两个意义：
