@@ -29,3 +29,5 @@
 | 2023.4.22  | 撰写可行性报告          |  [可行性报告](https://github.com/OSH-2023/My-Glow/blob/main/docs/feasibility/%E5%8F%AF%E8%A1%8C%E6%80%A7%E6%8A%A5%E5%91%8A.md)|已提交至My-Glow/docs/feasibility |
 | 2023.5.1   | 会议讨论中期报告     |  [5.1 discussion](https://github.com/OSH-2023/My-Glow/blob/main/docs/discussion/5.1%20discussion.md) | |
 | 2023.6.1   | 这段时间完成了部署，一直在改bug以及尝试在此基础改进,并撰写了部署文档     |  [部署文档](https://github.com/OSH-2023/My-Glow/blob/main/deploy/tobedone%20%E9%83%A8%E7%BD%B2%20lz.md) | |
+| 2023.7.9   | 做终期汇报     |  [终期汇报pptx](https://github.com/OSH-2023/My-Glow/blob/main/docs/conclusion/%E7%BB%93%E9%A2%98%E6%8A%A5%E5%91%8A.pptx) | |
+
