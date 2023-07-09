@@ -217,7 +217,7 @@ centralserver,webserver,storage,ray,neo4j等节点是我们要监控的节点，
 
 本项目是在过去几年内几个OSH项目基础上优化发展而来的。
 
-![image-20230709110954785](./src/image-20230709110954785.png)
+![image-20230709110954786](./src/image-20230709110954786.png)
 
 往年项目有几条时间线，比如x-TOBEDONE的项目GraND pro是在x-DisGraFS，x-dontpanic基础上发展而来的,x-Wowkiddy是在x-DisGraFS基础上发展而来的，而DisGraFS也参考了之前的项目......
 
