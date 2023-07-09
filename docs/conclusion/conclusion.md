@@ -164,7 +164,7 @@ Neo4j 是一个高性能的 NOSQL 图形数据库。Neo4j基于其特殊的储�
 11. 中央服务器向存储集群发送commit信息使存储节点将缓冲区中的数据存储。中央服务器向neo4j发送命令使neo4j将缓冲区中的文件名和标签加入节点。
 
 12. 以上操作全部成功后向web服务器发送成功消息，web服务器更改网络结构
-![image](https://github.com/OSH-2023/My-Glow/assets/110106138/f2084fc0-e2fe-454d-a41a-00488f7cb8ea)
+![image](https://github.com/OSH-2023/My-Glow/docs/conclusion/src/Upload.png)
 
 
 ### Ray模块
